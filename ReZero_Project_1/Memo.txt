@@ -1,0 +1,127 @@
+﻿            //var htmlNodes = HtmlDoc.DocumentNode.SelectNodes("//body/table[1]/tr[3]"); //<table cellspacing="0" class="type2">
+
+            //var htmlNodes_ = new string[10];
+            //string[] ar = new string[10];
+            //for (int i = 0; i < 10; i++) {
+            //    if (i < 5) ar[i] = "tr" + "[" + (i + 3) + "]";
+            //    else       ar[i] = "tr" + "[" + (i + 6) + "]";
+            //    ar[i] = "//body/table[1]/" + ar[i] + '"';
+            //    htmlNodes_[i] = HtmlDoc.DocumentNode.SelectNodes(ar[i]);
+            //
+            //}
+
+
+
+                        //
+            //var htmlNodes_6 = HtmlDoc.DocumentNode.SelectNodes("//body/table[1]/tr[11]");
+            //var htmlNodes_7 = HtmlDoc.DocumentNode.SelectNodes("//body/table[1]/tr[12]");
+            //var htmlNodes_8 = HtmlDoc.DocumentNode.SelectNodes("//body/table[1]/tr[13]");
+            //var htmlNodes_9 = HtmlDoc.DocumentNode.SelectNodes("//body/table[1]/tr[14]");
+            //var htmlNodes_10= HtmlDoc.DocumentNode.SelectNodes("//body/table[1]/tr[15]");
+
+
+                                string s_dcp = "";
+                    foreach (char c in data_closing_price)
+                    {
+                        if (c >= '0' && c <= '9') 
+                        {
+                            s_dcp = String.Concat(s_dcp, c);
+                        }
+                    }
+
+                    string s_dtv = "";
+                    foreach( char c in data_transaction_volume )
+                    {
+                        if ( c >= '0' && c <= '9')
+                        {
+                            s_dtv = String.Concat(s_dtv, c);
+                        }
+                    }
+
+
+                                        int tt = call_method.CnvStringToInt(s_dtv);
+
+                    if (Int32.TryParse(s_dcp, out s_dcp_int[1]))
+                    if (Int32.TryParse(s_dtv, out s_dtv_int[1]))
+
+
+ textBox8.Text += s_dcp_int[1] + Environment.NewLine + s_dtv_int[1] + Environment.NewLine;
+
+
+
+
+
+
+
+
+
+             //
+            ////excel load
+            //excelApp = new Excel.Application();
+            //wb = excelApp.Workbooks.Open(@"C:\Users\Administrator\Desktop\dak\BAP GOGO\sangjang.xls");
+            //
+            //ws = wb.Worksheets.get_Item(1) as Excel.Worksheet;
+            //Excel.Range rng = ws.UsedRange;
+            //object[,] data = rng.Value;
+            //
+            //for (int i = 2; i < ROW_MAX; i++)
+            //{
+            //    if (data[i, 1].ToString() == textBox1.Text)
+            //    {
+            //        excel_load_flg = true;
+            //        //회사 명
+            //        textBox1.Text = data[i, 1].ToString();
+            //
+            //        //종목 코드
+            //        textBox2.Text = data[i, 2].ToString();
+            //        jusik_code = textBox2.Text;
+            //
+            //        string str_7 = string.Format("{0}", data[i, 7]);
+            //        string str_9 = string.Format("{0}", data[i, 9]);
+            //        string str_4 = string.Format("{0}", data[i, 4]);
+            //        string str_3 = string.Format("{0}", data[i, 3]);
+            //        //대표자명
+            //        if (str_7 == string.Empty)
+            //        {
+            //            textBox3.Text = "없음";
+            //        }
+            //        else
+            //        {
+            //            textBox3.Text = data[i, 7].ToString();
+            //        }
+            //        //결산 월
+            //        textBox5.Text = data[i, 6].ToString();
+            //
+            //        //지역
+            //        if (str_9 == string.Empty)
+            //        {
+            //            textBox6.Text = "없음";
+            //        }
+            //        else
+            //        {
+            //            textBox6.Text = data[i, 9].ToString();
+            //        }
+            //        //주요제품
+            //        if (str_4 == string.Empty)
+            //        {
+            //            textBox4.Text = "없음";
+            //        }
+            //        else
+            //        {
+            //            textBox4.Text = data[i, 4].ToString();
+            //        }
+            //        //업종
+            //        if (str_3 == string.Empty)
+            //        {
+            //            textBox7.Text = "없음";
+            //        }
+            //        else
+            //        {
+            //            textBox7.Text = data[i, 3].ToString();
+            //        }
+            //    }
+            //}
+            //if (excel_load_flg == false)
+            //{
+            //    textBox1.Text = "정보없음";
+            //}
