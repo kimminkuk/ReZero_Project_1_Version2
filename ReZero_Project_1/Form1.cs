@@ -80,7 +80,6 @@ namespace ReZero_Project_1
                     textBox1.Text = sj.jongmok[i];
 
                     //종목코드
-                    //textBox2.Text = call_method.IsParseNumber(sj.company[i]);
                     textBox2.Text = Convert.ToString(sj.company[i]);
                     break;
                 }
@@ -91,16 +90,12 @@ namespace ReZero_Project_1
 
         private void button1_Click(object sender, EventArgs e)
         {
-            //CheckedListBox.
-            //BAP.SetItemChecked(0, true);
-            //
-            //BAP.SetItemChecked(1, true);
-            //
-            //BAP.SetItemChecked(2, true);
-
             string item = BAP.SelectedItem.ToString();
-
             textBox9.Text = item + "Selected";
+
+            BP_Learn BP = new BP_Learn();
+
+            BP.BP_Start();
         }
 
 
