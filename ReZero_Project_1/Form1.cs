@@ -88,14 +88,14 @@ namespace ReZero_Project_1
             timer_end = true;
         }
 
+        //AI START
         private void button1_Click(object sender, EventArgs e)
         {
             string item = BAP.SelectedItem.ToString();
             textBox9.Text = item + "Selected";
 
             BP_Learn BP = new BP_Learn();
-
-            BP.BP_Start();
+            BP.BP_START();
         }
 
 
