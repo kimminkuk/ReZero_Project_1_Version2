@@ -65,7 +65,11 @@ namespace ReZero_Project_1
                 //ex) 20,21,22,23,24 / 15,16,17,18,19 / ...
                 for (int j = New_Lable - (Hd_L_Number + jump); j < New_Lable - jump; j++ )
                 {
-                    Sum[j] = 0;
+                    //ex) 25-(5+5*k) -> n=20-5k; n < 25-5k; n++ -> 20,21,22,23,24 / 15,16,17,18,19 / ....
+                    for(int n = New_Lable - (Hd_L_Number + k); n < New_Lable - k; n++)
+                    {
+                        Sum[j] += 
+                    }
                 }
             }
         }

@@ -80,7 +80,10 @@ namespace ReZero_Project_1
                     textBox1.Text = sj.jongmok[i];
 
                     //종목코드
-                    textBox2.Text = Convert.ToString(sj.company[i]);
+                    //string sr = sj.company[i].ToString();
+                    textBox2.Text = sj.company[i].ToString("D6");
+                    jusik_code = textBox2.Text;
+                    //textBox2.Text = Convert.ToString(sj.company[i]);
                     break;
                 }
                 if (i == 3720) textBox2.Text = "ERR";
