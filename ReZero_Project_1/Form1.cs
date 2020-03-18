@@ -41,6 +41,9 @@ namespace ReZero_Project_1
         //Method Set
         MethodClass call_method = new MethodClass();
 
+        //const
+        const int _5days = 5;
+
         public Form1()
         {
             InitializeComponent();
@@ -213,6 +216,7 @@ namespace ReZero_Project_1
         //jusik_code = "084680";
         private void button4_Click(object sender, EventArgs e)
         {
+            //시가,고가,저가,거래량 --> 종가   총 5개 데이터 필요, 5일선,20일선,60일선 
             var html = @"https://finance.naver.com/item/sise_day.nhn?code=";
             var test = jusik_code + "&page=1";
             html += test; // 주식 정보 종합
@@ -220,9 +224,13 @@ namespace ReZero_Project_1
             HtmlWeb web = new HtmlWeb();
             var HtmlDoc = web.Load(html);
 
-            int []s_dcp_int = new int[10];
-            int []s_dtv_int = new int[10];
-            string[] s_string = new string[10];
+            int carry = 0;
+            int []s_dcp_int = new int[_5days]; //closing price
+            int []s_dtv_int = new int[_5days]; //transaction volume
+            int[] s_dmp_int = new int[_5days]; //marget price
+            int[] s_dhp_int = new int[_5days]; //high price
+            int[] s_dlp_int = new int[_5days]; //low price
+            string[] s_string = new string[_5days];
 
             var htmlNodes_1 = HtmlDoc.DocumentNode.SelectNodes("//body/table[1]/tr[3]");
             var htmlNodes_2 = HtmlDoc.DocumentNode.SelectNodes("//body/table[1]/tr[4]");
@@ -237,18 +245,26 @@ namespace ReZero_Project_1
             if (htmlNodes_4 == null) { err_cnt++; textBox8.Text = "error " + err_cnt + "\n"; return; }
             if (htmlNodes_5 == null) { err_cnt++; textBox8.Text = "error " + err_cnt + "\n"; return; }
 
+            //td1 날짜, td2 종가, td3 전일비, td4 시가, td5 고가, td6 저가 td7 거래량
             foreach (var node in htmlNodes_1)
             {
                 if (node != null)
                 {
-                    //td1 날짜, td 2 종가, td7 거래량
                     var data_date               = node.SelectSingleNode("td[1]").InnerText;
                     var data_closing_price      = node.SelectSingleNode("td[2]").InnerText;
+                    var data_market_price       = node.SelectSingleNode("td[4]").InnerText;
+                    var data_high_price         = node.SelectSingleNode("td[5]").InnerText;
+                    var data_low_price          = node.SelectSingleNode("td[6]").InnerText;
                     var data_transaction_volume = node.SelectSingleNode("td[7]").InnerText;
-                    textBox8.Text = data_date + " \n" + data_closing_price + " \n" + data_transaction_volume + Environment.NewLine;
+                    textBox8.Text = "Date:" + data_date + " 종가:" + data_closing_price + " 시가:" + data_market_price + 
+                        " 고가:"+ data_high_price + " 저가:" + data_low_price + " 거래량:" + data_transaction_volume + Environment.NewLine;
 
-                    s_dcp_int[0] = call_method.CnvStringToInt(data_closing_price);
-                    s_dtv_int[0] = call_method.CnvStringToInt(data_transaction_volume);
+                    s_dcp_int[carry] = call_method.CnvStringToInt(data_closing_price);
+                    s_dtv_int[carry] = call_method.CnvStringToInt(data_transaction_volume);
+                    s_dmp_int[carry] = call_method.CnvStringToInt(data_market_price);
+                    s_dhp_int[carry] = call_method.CnvStringToInt(data_high_price);
+                    s_dlp_int[carry] = call_method.CnvStringToInt(data_low_price);
+                    carry++;
                 }
             }
 
@@ -256,14 +272,21 @@ namespace ReZero_Project_1
             {
                 if (node != null)
                 {
-                    //td1 날짜, td 2 종가, td7 거래량
                     var data_date = node.SelectSingleNode("td[1]").InnerText;
                     var data_closing_price = node.SelectSingleNode("td[2]").InnerText;
+                    var data_market_price = node.SelectSingleNode("td[4]").InnerText;
+                    var data_high_price = node.SelectSingleNode("td[5]").InnerText;
+                    var data_low_price = node.SelectSingleNode("td[6]").InnerText;
                     var data_transaction_volume = node.SelectSingleNode("td[7]").InnerText;
-                    textBox8.Text += data_date + " \n" + data_closing_price + " \n" + data_transaction_volume + Environment.NewLine;
+                    textBox8.Text += "Date:" + data_date + " 종가:" + data_closing_price + " 시가:" + data_market_price +
+                        " 고가:" + data_high_price + " 저가:" + data_low_price + " 거래량:" + data_transaction_volume + Environment.NewLine;
 
-                    s_dcp_int[1] = call_method.CnvStringToInt(data_closing_price);
-                    s_dtv_int[1] = call_method.CnvStringToInt(data_transaction_volume);
+                    s_dcp_int[carry] = call_method.CnvStringToInt(data_closing_price);
+                    s_dtv_int[carry] = call_method.CnvStringToInt(data_transaction_volume);
+                    s_dmp_int[carry] = call_method.CnvStringToInt(data_market_price);
+                    s_dhp_int[carry] = call_method.CnvStringToInt(data_high_price);
+                    s_dlp_int[carry] = call_method.CnvStringToInt(data_low_price);
+                    carry++;
                 }
             }
 
@@ -271,14 +294,21 @@ namespace ReZero_Project_1
             {
                 if (node != null)
                 {
-                    //td1 날짜, td 2 종가, td7 거래량
                     var data_date = node.SelectSingleNode("td[1]").InnerText;
                     var data_closing_price = node.SelectSingleNode("td[2]").InnerText;
+                    var data_market_price = node.SelectSingleNode("td[4]").InnerText;
+                    var data_high_price = node.SelectSingleNode("td[5]").InnerText;
+                    var data_low_price = node.SelectSingleNode("td[6]").InnerText;
                     var data_transaction_volume = node.SelectSingleNode("td[7]").InnerText;
-                    textBox8.Text += data_date + " \n" + data_closing_price + " \n" + data_transaction_volume + Environment.NewLine;
+                    textBox8.Text += "Date:" + data_date + " 종가:" + data_closing_price + " 시가:" + data_market_price +
+                        " 고가:" + data_high_price + " 저가:" + data_low_price + " 거래량:" + data_transaction_volume + Environment.NewLine;
 
-                    s_dcp_int[2] = call_method.CnvStringToInt(data_closing_price);
-                    s_dtv_int[2] = call_method.CnvStringToInt(data_transaction_volume);
+                    s_dcp_int[carry] = call_method.CnvStringToInt(data_closing_price);
+                    s_dtv_int[carry] = call_method.CnvStringToInt(data_transaction_volume);
+                    s_dmp_int[carry] = call_method.CnvStringToInt(data_market_price);
+                    s_dhp_int[carry] = call_method.CnvStringToInt(data_high_price);
+                    s_dlp_int[carry] = call_method.CnvStringToInt(data_low_price);
+                    carry++;
                 }
             }
 
@@ -286,14 +316,21 @@ namespace ReZero_Project_1
             {
                 if (node != null)
                 {
-                    //td1 날짜, td 2 종가, td7 거래량
                     var data_date = node.SelectSingleNode("td[1]").InnerText;
                     var data_closing_price = node.SelectSingleNode("td[2]").InnerText;
+                    var data_market_price = node.SelectSingleNode("td[4]").InnerText;
+                    var data_high_price = node.SelectSingleNode("td[5]").InnerText;
+                    var data_low_price = node.SelectSingleNode("td[6]").InnerText;
                     var data_transaction_volume = node.SelectSingleNode("td[7]").InnerText;
-                    textBox8.Text += data_date + " \n" + data_closing_price + " \n" + data_transaction_volume + Environment.NewLine;
+                    textBox8.Text += "Date:" + data_date + " 종가:" + data_closing_price + " 시가:" + data_market_price +
+                        " 고가:" + data_high_price + " 저가:" + data_low_price + " 거래량:" + data_transaction_volume + Environment.NewLine;
 
-                    s_dcp_int[3] = call_method.CnvStringToInt(data_closing_price);
-                    s_dtv_int[3] = call_method.CnvStringToInt(data_transaction_volume);
+                    s_dcp_int[carry] = call_method.CnvStringToInt(data_closing_price);
+                    s_dtv_int[carry] = call_method.CnvStringToInt(data_transaction_volume);
+                    s_dmp_int[carry] = call_method.CnvStringToInt(data_market_price);
+                    s_dhp_int[carry] = call_method.CnvStringToInt(data_high_price);
+                    s_dlp_int[carry] = call_method.CnvStringToInt(data_low_price);
+                    carry++;
                 }
             }
 
@@ -301,14 +338,21 @@ namespace ReZero_Project_1
             {
                 if (node != null)
                 {
-                    //td1 날짜, td 2 종가, td7 거래량
                     var data_date = node.SelectSingleNode("td[1]").InnerText;
                     var data_closing_price = node.SelectSingleNode("td[2]").InnerText;
+                    var data_market_price = node.SelectSingleNode("td[4]").InnerText;
+                    var data_high_price = node.SelectSingleNode("td[5]").InnerText;
+                    var data_low_price = node.SelectSingleNode("td[6]").InnerText;
                     var data_transaction_volume = node.SelectSingleNode("td[7]").InnerText;
-                    textBox8.Text += data_date + " \n" + data_closing_price + " \n" + data_transaction_volume + Environment.NewLine;
+                    textBox8.Text += "Date:" + data_date + " 종가:" + data_closing_price + " 시가:" + data_market_price +
+                        " 고가:" + data_high_price + " 저가:" + data_low_price + " 거래량:" + data_transaction_volume + Environment.NewLine;
 
-                    s_dcp_int[4] = call_method.CnvStringToInt(data_closing_price);
-                    s_dtv_int[4] = call_method.CnvStringToInt(data_transaction_volume);
+                    s_dcp_int[carry] = call_method.CnvStringToInt(data_closing_price);
+                    s_dtv_int[carry] = call_method.CnvStringToInt(data_transaction_volume);
+                    s_dmp_int[carry] = call_method.CnvStringToInt(data_market_price);
+                    s_dhp_int[carry] = call_method.CnvStringToInt(data_high_price);
+                    s_dlp_int[carry] = call_method.CnvStringToInt(data_low_price);
+                    carry++;
                 }
             }
 
