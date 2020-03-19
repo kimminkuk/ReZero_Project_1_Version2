@@ -28,6 +28,9 @@
         /// </summary>
         private void InitializeComponent()
         {
+            System.Windows.Forms.DataVisualization.Charting.ChartArea chartArea1 = new System.Windows.Forms.DataVisualization.Charting.ChartArea();
+            System.Windows.Forms.DataVisualization.Charting.Legend legend1 = new System.Windows.Forms.DataVisualization.Charting.Legend();
+            System.Windows.Forms.DataVisualization.Charting.Series series1 = new System.Windows.Forms.DataVisualization.Charting.Series();
             this.BAP = new System.Windows.Forms.CheckedListBox();
             this.button1 = new System.Windows.Forms.Button();
             this.button2 = new System.Windows.Forms.Button();
@@ -50,6 +53,8 @@
             this.button4 = new System.Windows.Forms.Button();
             this.textBox8 = new System.Windows.Forms.TextBox();
             this.textBox9 = new System.Windows.Forms.TextBox();
+            this.chart1 = new System.Windows.Forms.DataVisualization.Charting.Chart();
+            ((System.ComponentModel.ISupportInitialize)(this.chart1)).BeginInit();
             this.SuspendLayout();
             // 
             // BAP
@@ -227,7 +232,7 @@
             // 
             // button3
             // 
-            this.button3.Location = new System.Drawing.Point(670, 397);
+            this.button3.Location = new System.Drawing.Point(675, 410);
             this.button3.Name = "button3";
             this.button3.Size = new System.Drawing.Size(118, 41);
             this.button3.TabIndex = 19;
@@ -247,7 +252,7 @@
             // 
             // textBox8
             // 
-            this.textBox8.Location = new System.Drawing.Point(299, 74);
+            this.textBox8.Location = new System.Drawing.Point(299, 59);
             this.textBox8.MaximumSize = new System.Drawing.Size(10000, 10000);
             this.textBox8.Multiline = true;
             this.textBox8.Name = "textBox8";
@@ -257,19 +262,38 @@
             // 
             // textBox9
             // 
-            this.textBox9.Location = new System.Drawing.Point(299, 239);
+            this.textBox9.Location = new System.Drawing.Point(299, 313);
             this.textBox9.MaximumSize = new System.Drawing.Size(10000, 10000);
             this.textBox9.Multiline = true;
             this.textBox9.Name = "textBox9";
-            this.textBox9.Size = new System.Drawing.Size(489, 129);
+            this.textBox9.Size = new System.Drawing.Size(489, 91);
             this.textBox9.TabIndex = 22;
             this.textBox9.TextChanged += new System.EventHandler(this.textBox9_TextChanged);
+            // 
+            // chart1
+            // 
+            chartArea1.Name = "ChartArea1";
+            this.chart1.ChartAreas.Add(chartArea1);
+            legend1.Name = "Legend1";
+            this.chart1.Legends.Add(legend1);
+            this.chart1.Location = new System.Drawing.Point(299, 194);
+            this.chart1.Name = "chart1";
+            series1.ChartArea = "ChartArea1";
+            series1.ChartType = System.Windows.Forms.DataVisualization.Charting.SeriesChartType.Line;
+            series1.Legend = "Legend1";
+            series1.Name = "Series1";
+            this.chart1.Series.Add(series1);
+            this.chart1.Size = new System.Drawing.Size(489, 116);
+            this.chart1.TabIndex = 23;
+            this.chart1.Text = "chart1";
+            this.chart1.Click += new System.EventHandler(this.chart1_Click);
             // 
             // Form1
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(7F, 12F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
-            this.ClientSize = new System.Drawing.Size(800, 450);
+            this.ClientSize = new System.Drawing.Size(805, 463);
+            this.Controls.Add(this.chart1);
             this.Controls.Add(this.textBox9);
             this.Controls.Add(this.textBox8);
             this.Controls.Add(this.button4);
@@ -294,6 +318,7 @@
             this.Controls.Add(this.BAP);
             this.Name = "Form1";
             this.Text = "Form1";
+            ((System.ComponentModel.ISupportInitialize)(this.chart1)).EndInit();
             this.ResumeLayout(false);
             this.PerformLayout();
 
@@ -323,6 +348,7 @@
         private System.Windows.Forms.Button button4;
         private System.Windows.Forms.TextBox textBox8;
         private System.Windows.Forms.TextBox textBox9;
+        private System.Windows.Forms.DataVisualization.Charting.Chart chart1;
     }
 }
 

@@ -225,11 +225,12 @@ namespace ReZero_Project_1
             var HtmlDoc = web.Load(html);
 
             int carry = 0;
+            int[] s_date = new int[_5days]; //date get
             int []s_dcp_int = new int[_5days]; //closing price
             int []s_dtv_int = new int[_5days]; //transaction volume
-            int[] s_dmp_int = new int[_5days]; //marget price
-            int[] s_dhp_int = new int[_5days]; //high price
-            int[] s_dlp_int = new int[_5days]; //low price
+            int [] s_dmp_int = new int[_5days]; //marget price
+            int [] s_dhp_int = new int[_5days]; //high price
+            int [] s_dlp_int = new int[_5days]; //low price
             string[] s_string = new string[_5days];
 
             var htmlNodes_1 = HtmlDoc.DocumentNode.SelectNodes("//body/table[1]/tr[3]");
@@ -259,6 +260,7 @@ namespace ReZero_Project_1
                     textBox8.Text = "Date:" + data_date + " 종가:" + data_closing_price + " 시가:" + data_market_price + 
                         " 고가:"+ data_high_price + " 저가:" + data_low_price + " 거래량:" + data_transaction_volume + Environment.NewLine;
 
+                    s_date[carry] = call_method.CnvStringToInt_4(data_date);
                     s_dcp_int[carry] = call_method.CnvStringToInt(data_closing_price);
                     s_dtv_int[carry] = call_method.CnvStringToInt(data_transaction_volume);
                     s_dmp_int[carry] = call_method.CnvStringToInt(data_market_price);
@@ -281,6 +283,7 @@ namespace ReZero_Project_1
                     textBox8.Text += "Date:" + data_date + " 종가:" + data_closing_price + " 시가:" + data_market_price +
                         " 고가:" + data_high_price + " 저가:" + data_low_price + " 거래량:" + data_transaction_volume + Environment.NewLine;
 
+                    s_date[carry] = call_method.CnvStringToInt_4(data_date);
                     s_dcp_int[carry] = call_method.CnvStringToInt(data_closing_price);
                     s_dtv_int[carry] = call_method.CnvStringToInt(data_transaction_volume);
                     s_dmp_int[carry] = call_method.CnvStringToInt(data_market_price);
@@ -303,6 +306,7 @@ namespace ReZero_Project_1
                     textBox8.Text += "Date:" + data_date + " 종가:" + data_closing_price + " 시가:" + data_market_price +
                         " 고가:" + data_high_price + " 저가:" + data_low_price + " 거래량:" + data_transaction_volume + Environment.NewLine;
 
+                    s_date[carry] = call_method.CnvStringToInt_4(data_date);
                     s_dcp_int[carry] = call_method.CnvStringToInt(data_closing_price);
                     s_dtv_int[carry] = call_method.CnvStringToInt(data_transaction_volume);
                     s_dmp_int[carry] = call_method.CnvStringToInt(data_market_price);
@@ -325,6 +329,7 @@ namespace ReZero_Project_1
                     textBox8.Text += "Date:" + data_date + " 종가:" + data_closing_price + " 시가:" + data_market_price +
                         " 고가:" + data_high_price + " 저가:" + data_low_price + " 거래량:" + data_transaction_volume + Environment.NewLine;
 
+                    s_date[carry] = call_method.CnvStringToInt_4(data_date);
                     s_dcp_int[carry] = call_method.CnvStringToInt(data_closing_price);
                     s_dtv_int[carry] = call_method.CnvStringToInt(data_transaction_volume);
                     s_dmp_int[carry] = call_method.CnvStringToInt(data_market_price);
@@ -347,6 +352,7 @@ namespace ReZero_Project_1
                     textBox8.Text += "Date:" + data_date + " 종가:" + data_closing_price + " 시가:" + data_market_price +
                         " 고가:" + data_high_price + " 저가:" + data_low_price + " 거래량:" + data_transaction_volume + Environment.NewLine;
 
+                    s_date[carry] = call_method.CnvStringToInt_4(data_date);
                     s_dcp_int[carry] = call_method.CnvStringToInt(data_closing_price);
                     s_dtv_int[carry] = call_method.CnvStringToInt(data_transaction_volume);
                     s_dmp_int[carry] = call_method.CnvStringToInt(data_market_price);
@@ -356,8 +362,13 @@ namespace ReZero_Project_1
                 }
             }
 
-
-
+            //chart add
+            chart1.Series["Series1"].Points.Clear();
+            chart1.Series["Series1"].Points.AddXY(s_date[4].ToString("D4"), s_dcp_int[4]);
+            chart1.Series["Series1"].Points.AddXY(s_date[3].ToString("D4"), s_dcp_int[3]);
+            chart1.Series["Series1"].Points.AddXY(s_date[2].ToString("D4"), s_dcp_int[2]);
+            chart1.Series["Series1"].Points.AddXY(s_date[1].ToString("D4"), s_dcp_int[1]);
+            chart1.Series["Series1"].Points.AddXY(s_date[0].ToString("D4"), s_dcp_int[0]);
 
             //https://finance.naver.com/item/sise_time.nhn?code=084680&thistime=20200224161036
         }
@@ -369,6 +380,12 @@ namespace ReZero_Project_1
         }
 
         private void textBox9_TextChanged(object sender, EventArgs e)
+        {
+
+        }
+
+        //간단한 차트 추가
+        private void chart1_Click(object sender, EventArgs e)
         {
 
         }

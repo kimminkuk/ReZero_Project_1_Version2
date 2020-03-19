@@ -28,6 +28,29 @@ namespace ReZero_Project_1
                 return 0;
             }
         }
+        //textBox2.Text = sj.company[i].ToString("D6");
+        public int CnvStringToInt_4(string dcp)
+        {
+            string s_dtv = "";
+            int stringtoint = 0;
+            foreach (char c in dcp)
+            {
+                if (c >= '0' && c <= '9')
+                {
+                    s_dtv = String.Concat(s_dtv, c);
+                }
+            }
+            s_dtv = s_dtv.Substring(4);
+
+            if (Int32.TryParse(s_dtv, out stringtoint))
+            {
+                return stringtoint;
+            }
+            else
+            {
+                return 0;
+            }
+        }
 
         public bool IsParseNumber(object obj)
         {
