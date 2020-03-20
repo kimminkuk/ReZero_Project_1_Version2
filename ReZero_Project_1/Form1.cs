@@ -27,8 +27,6 @@ namespace ReZero_Project_1
         Excel.Workbook wb = null;
         Excel.Worksheet ws = null;
         private Timer timer;
-        bool timer_end = false;
-        bool excel_load_flg = false;
         
         private const int ROW_MAX = 3722;
 
@@ -43,6 +41,17 @@ namespace ReZero_Project_1
 
         //const
         const int _5days = 5;
+        int[] s_date = new int[_5days]; //date get
+        int[] s_dcp_int = new int[_5days]; //closing price
+        int[] s_dtv_int = new int[_5days]; //transaction volume
+        int[] s_dmp_int = new int[_5days]; //marget price
+        int[] s_dhp_int = new int[_5days]; //high price
+        int[] s_dlp_int = new int[_5days]; //low price
+
+        //FLAG
+        bool timer_end = false;
+        bool excel_load_flg = false;
+        bool AI_Learn_flg = false;
 
         public Form1()
         {
@@ -97,11 +106,24 @@ namespace ReZero_Project_1
         //AI START
         private void button1_Click(object sender, EventArgs e)
         {
+            double Learn_Result = 0;
             string item = BAP.SelectedItem.ToString();
-            textBox9.Text = item + "Selected";
-
+            textBox9.Text = item + "Selected" + Environment.NewLine;
+            if (AI_Learn_flg == false) { textBox9.Text += "DATA READ FAIL"; return; } 
+            
             BP_Learn BP = new BP_Learn();
-            BP.BP_START();
+
+            //1. martget price
+            //2. high price
+            //3. low price
+            //4. transaction price
+            //5. closing price (output)
+
+            //5days
+            Learn_Result = BP.BP_START(s_dmp_int, s_dhp_int, s_dlp_int, s_dtv_int, s_dcp_int);
+
+
+            textBox9.Text += "종가 예측: " + Learn_Result;
         }
 
 
@@ -174,7 +196,7 @@ namespace ReZero_Project_1
         private void button3_Click(object sender, EventArgs e)
         {
             excel_load_flg = false;
-
+            AI_Learn_flg = false;
             //회사 명
             textBox1.Text = "검색어 입력";
 
@@ -216,6 +238,7 @@ namespace ReZero_Project_1
         //jusik_code = "084680";
         private void button4_Click(object sender, EventArgs e)
         {
+            AI_Learn_flg = true;
             //시가,고가,저가,거래량 --> 종가   총 5개 데이터 필요, 5일선,20일선,60일선 
             var html = @"https://finance.naver.com/item/sise_day.nhn?code=";
             var test = jusik_code + "&page=1";
@@ -225,12 +248,12 @@ namespace ReZero_Project_1
             var HtmlDoc = web.Load(html);
 
             int carry = 0;
-            int[] s_date = new int[_5days]; //date get
-            int []s_dcp_int = new int[_5days]; //closing price
-            int []s_dtv_int = new int[_5days]; //transaction volume
-            int [] s_dmp_int = new int[_5days]; //marget price
-            int [] s_dhp_int = new int[_5days]; //high price
-            int [] s_dlp_int = new int[_5days]; //low price
+//            int[] s_date = new int[_5days]; //date get
+//            int []s_dcp_int = new int[_5days]; //closing price
+//            int []s_dtv_int = new int[_5days]; //transaction volume
+//            int [] s_dmp_int = new int[_5days]; //marget price
+//            int [] s_dhp_int = new int[_5days]; //high price
+//            int [] s_dlp_int = new int[_5days]; //low price
             string[] s_string = new string[_5days];
 
             var htmlNodes_1 = HtmlDoc.DocumentNode.SelectNodes("//body/table[1]/tr[3]");
