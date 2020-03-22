@@ -41,12 +41,18 @@ namespace ReZero_Project_1
 
         //const
         const int _5days = 5;
-        int[] s_date = new int[_5days]; //date get
-        int[] s_dcp_int = new int[_5days]; //closing price
-        int[] s_dtv_int = new int[_5days]; //transaction volume
-        int[] s_dmp_int = new int[_5days]; //marget price
-        int[] s_dhp_int = new int[_5days]; //high price
-        int[] s_dlp_int = new int[_5days]; //low price
+        const int _days = 5;
+
+        Global_days GG = new Global_days();
+        
+        int[] s_date = new int[_days]; //date get
+        int[] s_dcp_int = new int[_days]; //closing price
+        int[] s_dtv_int = new int[_days]; //transaction volume
+        int[] s_dmp_int = new int[_days]; //marget price
+        int[] s_dhp_int = new int[_days]; //high price
+        int[] s_dlp_int = new int[_days]; //low price
+
+        stock_info_[] stock = new stock_info_[_days];
 
         //FLAG
         bool timer_end = false;
@@ -69,6 +75,7 @@ namespace ReZero_Project_1
             //string item = BAP.SelectedItem.ToString();
             //
             //textBox9.Text = index + "/" + item + "Selected";
+            
         }
 
         //Excel Load
@@ -109,8 +116,8 @@ namespace ReZero_Project_1
             double Learn_Result = 0;
             string item = BAP.SelectedItem.ToString();
             textBox9.Text = item + "Selected" + Environment.NewLine;
-            if (AI_Learn_flg == false) { textBox9.Text += "DATA READ FAIL"; return; } 
-            
+            if (AI_Learn_flg == false) { textBox9.Text += "DATA READ FAIL"; return; }
+
             BP_Learn BP = new BP_Learn();
 
             //1. martget price
@@ -239,6 +246,13 @@ namespace ReZero_Project_1
         private void button4_Click(object sender, EventArgs e)
         {
             AI_Learn_flg = true;
+            html_addr HTML_ADDR = new html_addr();
+
+            //NEW
+            textBox8.Text = HTML_ADDR.html_HtmlDoc_page1(jusik_code);
+
+
+
             //시가,고가,저가,거래량 --> 종가   총 5개 데이터 필요, 5일선,20일선,60일선 
             var html = @"https://finance.naver.com/item/sise_day.nhn?code=";
             var test = jusik_code + "&page=1";
@@ -248,13 +262,7 @@ namespace ReZero_Project_1
             var HtmlDoc = web.Load(html);
 
             int carry = 0;
-//            int[] s_date = new int[_5days]; //date get
-//            int []s_dcp_int = new int[_5days]; //closing price
-//            int []s_dtv_int = new int[_5days]; //transaction volume
-//            int [] s_dmp_int = new int[_5days]; //marget price
-//            int [] s_dhp_int = new int[_5days]; //high price
-//            int [] s_dlp_int = new int[_5days]; //low price
-            string[] s_string = new string[_5days];
+            string[] s_string = new string[_days];
 
             var htmlNodes_1 = HtmlDoc.DocumentNode.SelectNodes("//body/table[1]/tr[3]");
             var htmlNodes_2 = HtmlDoc.DocumentNode.SelectNodes("//body/table[1]/tr[4]");

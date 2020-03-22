@@ -93,6 +93,7 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Include="BP_Learn.cs" />
+    <Compile Include="Html_foreach.cs" />
     <Compile Include="MethodClass.cs" />
     <Compile Include="Form1.cs">
       <SubType>Form</SubType>

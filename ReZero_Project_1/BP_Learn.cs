@@ -19,6 +19,8 @@ namespace ReZero_Project_1
         const int Get_20days = 20;
         const int Get_60days = 60;
 
+        const int Get_days = 5;
+
         //int 
         int Bias = 1;
         int bnc = 0;
@@ -70,6 +72,12 @@ namespace ReZero_Project_1
         //Random class for Weight,Bias
         Random ran = new Random();
 
+        // temp value
+        int max_count = 0;
+        int digits = 0;
+        int max_count_tv = 0;
+        int digits_tv = 0;
+
         /*BPA Learn*/
         //1.시가 2.고가 3.저가 4.거래량 5.종가(타겟)
         public double BP_START(int[] mp, int[] hp, int[] lp, int[] tv, int[] cp)
@@ -95,28 +103,54 @@ namespace ReZero_Project_1
                 Weight_Output_Layer[i] = ran.NextDouble();
             }
             
+            //max count get
+            for (int i = 0; i < Get_days; i++)
+            {
+                if ( max_count < hp[i])
+                {
+                    max_count = hp[i];
+                }
+            }
+            do
+            {
+                max_count = (max_count / 10);
+                digits++;
+            } while (max_count > 0);
+
+            for (int i = 0; i < Get_days; i++)
+            {
+                if (max_count_tv < tv[i])
+                {
+                    max_count_tv = tv[i];
+                }
+            }
+            do
+            {
+                max_count_tv = (max_count_tv / 10);
+                digits_tv++;
+            } while (max_count_tv > 0);
+
             //Input Set
-            for(int i = 0; i < Get_5days; i++)
+            for (int i = 0; i < Get_days; i++)
             {
                 Input[i + 0] = mp[i];
                 Input[i + 1] = hp[i];
                 Input[i + 2] = lp[i];
                 Input[i + 3] = tv[i];
 
-                Input[i + 0] /= 10000;
-                Input[i + 1] /= 10000;
-                Input[i + 2] /= 10000;
-                Input[i + 3] /= 1000000;
-
+                Input[i + 0] /= Math.Pow(10, digits);
+                Input[i + 1] /= Math.Pow(10, digits);
+                Input[i + 2] /= Math.Pow(10, digits);
+                Input[i + 3] /= Math.Pow(10, digits_tv);
             }
 
-            for (int i = 0; i < Get_5days; i++)
+            for (int i = 0; i < Get_days; i++)
             {
                 for(int j = 0; j < Output_Neuron; j++)
                 {
                     Target_t[i, j] = cp[i];
 
-                    Target_t[i, j] /= 10000;
+                    Target_t[i, j] /= Math.Pow(10, digits);
                 }
             }
 
@@ -280,14 +314,14 @@ namespace ReZero_Project_1
 
                 ++bnc;
                 ++Iteration;
-                if (bnc == Get_5days) bnc = 0;
+                if (bnc == Get_days) bnc = 0;
 
-                if ((Iteration % Get_5days) == 0)
+                if ((Iteration % Get_days) == 0)
                 {
                     RMSE = 0;
                     for (int i = 0; i < Output_Neuron; ++i)
                     {
-                        Error_Result[i] = (Error_add[i] / Get_5days);
+                        Error_Result[i] = (Error_add[i] / Get_days);
                         Error_add[i] = 0;
                     }
                 }
@@ -298,13 +332,13 @@ namespace ReZero_Project_1
             bnc = 0;
             for (int i = 0; i < Input_Neuron; i++)
             {
-                for (int j = 0; j < Get_5days; j++)
+                for (int j = 0; j < Get_days; j++)
                 {
                     //ex) 0,4,8,12,16
                     //ex) 1,5,9,13,17
-                    T_Input[i] += Input[j * (Get_5days-1) + i];
+                    T_Input[i] += Input[j * (Get_days - 1) + i];
                 }
-                T_Input[i] = T_Input[i] / Get_5days;
+                T_Input[i] = T_Input[i] / Get_days;
             }
 
             /*Input - Hidden Layer[0] 사이 Sum,Sigmoid,Delta */
