@@ -23,9 +23,9 @@ namespace ReZero_Project_1
     public partial class Form1 : Form
     {
         //All Reference....
-        Excel.Application excelApp = null;
-        Excel.Workbook wb = null;
-        Excel.Worksheet ws = null;
+        //Excel.Application excelApp = null;
+        //Excel.Workbook wb = null;
+        //Excel.Worksheet ws = null;
         private Timer timer;
         
         private const int ROW_MAX = 3722;
@@ -41,18 +41,18 @@ namespace ReZero_Project_1
 
         //const
         const int _5days = 5;
-        const int _days = 5;
+        const int _days = 20;
 
         Global_days GG = new Global_days();
         
-        int[] s_date = new int[_days]; //date get
-        int[] s_dcp_int = new int[_days]; //closing price
-        int[] s_dtv_int = new int[_days]; //transaction volume
-        int[] s_dmp_int = new int[_days]; //marget price
-        int[] s_dhp_int = new int[_days]; //high price
-        int[] s_dlp_int = new int[_days]; //low price
+        // int[] s_date = new int[_days]; //date get
+        // int[] s_dcp_int = new int[_days]; //closing price
+        // int[] s_dtv_int = new int[_days]; //transaction volume
+        // int[] s_dmp_int = new int[_days]; //marget price
+        // int[] s_dhp_int = new int[_days]; //high price
+        // int[] s_dlp_int = new int[_days]; //low price
 
-        stock_info_[] stock = new stock_info_[_days];
+        stock_[] stock = new stock_[_days];
 
         //FLAG
         bool timer_end = false;
@@ -127,8 +127,8 @@ namespace ReZero_Project_1
             //5. closing price (output)
 
             //5days
-            Learn_Result = BP.BP_START(s_dmp_int, s_dhp_int, s_dlp_int, s_dtv_int, s_dcp_int);
-
+            //Learn_Result = BP.BP_START(s_dmp_int, s_dhp_int, s_dlp_int, s_dtv_int, s_dcp_int);
+            Learn_Result = BP.BP_START_STOCK(ref stock);
 
             textBox9.Text += "종가 예측: " + Learn_Result;
         }
@@ -243,16 +243,18 @@ namespace ReZero_Project_1
         ////https://finance.naver.com/item/sise_day.nhn?code=084680 (일별 시세)
         //https://finance.naver.com/item/sise_day.nhn?code=084680&page=1
         //jusik_code = "084680";
+        //https://finance.naver.com/item/sise_time.nhn?code=084680&thistime=20200224161036
         private void button4_Click(object sender, EventArgs e)
         {
             AI_Learn_flg = true;
             html_addr HTML_ADDR = new html_addr();
 
             //NEW
-            textBox8.Text = HTML_ADDR.html_HtmlDoc_page1(jusik_code);
-
-
-
+            //Page1 10days
+            textBox8.Text = HTML_ADDR.html_HtmlDoc_page1(jusik_code, ref stock);
+            //Page2 10days
+            textBox8.Text += HTML_ADDR.html_HtmlDoc_page2(jusik_code, ref stock);
+#if false
             //시가,고가,저가,거래량 --> 종가   총 5개 데이터 필요, 5일선,20일선,60일선 
             var html = @"https://finance.naver.com/item/sise_day.nhn?code=";
             var test = jusik_code + "&page=1";
@@ -392,7 +394,7 @@ namespace ReZero_Project_1
                     carry++;
                 }
             }
-
+            
             //chart add
             chart1.Series["Series1"].Points.Clear();
             chart1.Series["Series1"].Points.AddXY(s_date[4].ToString("D4"), s_dcp_int[4]);
@@ -400,8 +402,18 @@ namespace ReZero_Project_1
             chart1.Series["Series1"].Points.AddXY(s_date[2].ToString("D4"), s_dcp_int[2]);
             chart1.Series["Series1"].Points.AddXY(s_date[1].ToString("D4"), s_dcp_int[1]);
             chart1.Series["Series1"].Points.AddXY(s_date[0].ToString("D4"), s_dcp_int[0]);
+#endif
 
-            //https://finance.naver.com/item/sise_time.nhn?code=084680&thistime=20200224161036
+            //chart add
+            chart1.Series["Series1"].Points.Clear();
+            for (int i = GG._days-1; i > 0; i--)
+            {
+                chart1.Series["Series1"].Points.AddXY(stock[i].s_date.ToString("D4"), stock[i].s_dcp_int);
+//                chart1.Series["Series1"].Points.AddXY(stock[3].s_date.ToString("D4"), stock[3].s_dcp_int);
+//                chart1.Series["Series1"].Points.AddXY(stock[2].s_date.ToString("D4"), stock[2].s_dcp_int);
+//                chart1.Series["Series1"].Points.AddXY(stock[1].s_date.ToString("D4"), stock[1].s_dcp_int);
+//                chart1.Series["Series1"].Points.AddXY(stock[0].s_date.ToString("D4"), stock[0].s_dcp_int);
+            }
         }
 
         //크롤링 테스트 중

@@ -19,7 +19,7 @@ namespace ReZero_Project_1
         const int Get_20days = 20;
         const int Get_60days = 60;
 
-        const int Get_days = 5;
+        const int Get_days = 20;
 
         //int 
         int Bias = 1;
@@ -79,7 +79,9 @@ namespace ReZero_Project_1
         int digits_tv = 0;
 
         /*BPA Learn*/
-        //1.시가 2.고가 3.저가 4.거래량 5.종가(타겟)
+//1.시가 2.고가 3.저가 4.거래량 5.종가(타겟)
+
+#if false
         public double BP_START(int[] mp, int[] hp, int[] lp, int[] tv, int[] cp)
         {
             //Bias, Hidden Neuron Weight Set
@@ -389,5 +391,324 @@ namespace ReZero_Project_1
 
             return Math.Abs(T_Output_Sigmoid[0]);
         } //BP_START
+#endif
+        public double BP_START_STOCK(ref stock_[] bp_stock)
+        {
+            //Initial
+            Global_days GG = new Global_days();
+            stock_[] stock_bp = new stock_[GG._days];
+            stock_bp = bp_stock; //ref
+
+            //Bias, Hidden Neuron Weight Set
+            for (int i = 0; i < Number_Neurons; i++)
+            {
+                Bias_Weight[i] = ran.NextDouble();
+            }
+            for (int i = 0; i < Input_Neuron * Hd_L_Number; i++)
+            {
+                Weight_Input_Layer[i] = ran.NextDouble();
+            }
+            for (int i = 0; i < Number_Layer; i++)
+            {
+                for (int j = 0; j < Hd_L_Number * Hd_L_Number; j++)
+                {
+                    Weight_Layer[i, j] = ran.NextDouble();
+                }
+            }
+            for (int i = 0; i < Output_Neuron * Hd_L_Number; i++)
+            {
+                Weight_Output_Layer[i] = ran.NextDouble();
+            }
+
+            //max count get
+            for (int i = 0; i < Get_days; i++)
+            {
+                if (max_count < stock_bp[i].s_dhp_int)
+                {
+                    max_count = stock_bp[i].s_dhp_int;
+                }
+            }
+            do
+            {
+                max_count = (max_count / 10);
+                digits++;
+            } while (max_count > 0);
+
+            for (int i = 0; i < Get_days; i++)
+            {
+                if (max_count_tv < stock_bp[i].s_dtv_int)
+                {
+                    max_count_tv = stock_bp[i].s_dtv_int;
+                }
+            }
+            do
+            {
+                max_count_tv = (max_count_tv / 10);
+                digits_tv++;
+            } while (max_count_tv > 0);
+
+            //Input Set
+            for (int i = 0; i < Get_days; i++)
+            {
+                
+                Input[i + 0] = stock_bp[i].s_dmp_int;
+                Input[i + 1] = stock_bp[i].s_dhp_int;
+                Input[i + 2] = stock_bp[i].s_dlp_int;
+                Input[i + 3] = stock_bp[i].s_dtv_int;
+
+                Input[i + 0] /= Math.Pow(10, digits);
+                Input[i + 1] /= Math.Pow(10, digits);
+                Input[i + 2] /= Math.Pow(10, digits);
+                Input[i + 3] /= Math.Pow(10, digits_tv);
+            }
+
+            for (int i = 0; i < Get_days; i++)
+            {
+                for (int j = 0; j < Output_Neuron; j++)
+                {
+                    Target_t[i, j] = stock_bp[i].s_dcp_int;
+
+                    Target_t[i, j] /= Math.Pow(10, digits);
+                }
+            }
+
+            //Output Set
+
+            //BPA Start
+            while (Epoch-- > 0)
+            {
+                /*Input - Hidden Layer[0] 사이 Sum,Sigmoid,Delta */
+                for (int i = 0; i < Input_Neuron; i++)
+                {
+                    for (int j = 0; j < Input_Neuron; j++)
+                    {
+                        Sum[i] += Input[j + bnc * Input_Neuron] * Weight_Input_Layer[inc];
+                        ++inc;
+                    }
+                    Sum[i] += (Bias * Bias_Weight[i]);
+                    Sigmoid[i] = (1.0 / (1.0 + Math.Exp(-Sum[i])));
+                }
+                inc = 0;
+
+                /*Hidden Layer 사이의 Sum, Sigmoid*/
+                for (int i = Number_Layer - 1; i > 0; i--)
+                {
+                    k += Hd_L_Number;
+                    //ex) 20,21,22,23,24 / 15,16,17,18,19 / ...
+                    for (int j = New_Lable - (Hd_L_Number + jump); j < New_Lable - jump; j++)
+                    {
+                        //ex) 25-(5+5*k) -> n=20-5k; n < 25-5k; n++ -> 20,21,22,23,24 / 15,16,17,18,19 / ....
+                        for (int n = New_Lable - (Hd_L_Number + k); n < New_Lable - k; n++)
+                        {
+                            Sum[j] += (Sigmoid[n] * Weight_Layer[i - 1, inc]);
+                            ++inc;
+                        }
+                        Sum[j] += (Bias * Bias_Weight[j]);
+                        Sigmoid[j] = (1.0 / (1.0 + Math.Exp(-Sum[j])));
+                    }
+                    inc = 0;
+                    jump += Hd_L_Number;
+                }
+                jump = 0;
+                k = 0;
+
+                /*	Output Layer와 연결된 Hidden Layer이용하여 Output Sum,Sigmoid	*/
+                for (int i = 0; i < Output_Neuron; ++i)
+                {
+                    for (int j = Lable; j < New_Lable; j++)
+                    {
+                        Sum_Output[i] += (Sigmoid[j] * Weight_Output_Layer[inc]);
+                        inc++;
+                    }
+                    Sum_Output[i] += (Bias * Bias_Weight[New_Lable + i]);
+                    Sigmoid_Output[i] = (1.0 / (1.0 + Math.Exp(-Sum_Output[i])));
+                    Delta_Output[i] = (Sigmoid_Output[i] * (1 - Sigmoid_Output[i])) * (Target_t[bnc, i] - Sigmoid_Output[i]);
+
+                    /*Target 값 설정 주의*/
+                    for (int j = Lable; j < New_Lable; ++j)
+                    {
+                        Delta[j] += (Sigmoid[j] * (1 - Sigmoid[j]) * Weight_Output_Layer[carry] * Delta_Output[i]);
+                        ++carry;
+                    }
+                }
+                inc = 0;
+                carry = 0;
+
+                /*Hidden Layer들 사이의 Delta*/
+                for (int i = Number_Layer - 1; i > 0; --i)
+                {
+                    carry += Hd_L_Number;
+                    //ex) 30 - (10+jump)  < 25 - jump -> 1. 20 < 25 2. 15 < 20 3.10 < 15
+                    for (int z = New_Lable - (2 * Hd_L_Number + jump); z < New_Lable - Hd_L_Number - jump; z++)
+                    {
+                        //ex) 30 - carry < 30 - jump  1. 25 < 30 2. 20 < 25 ...
+                        for (int j = (New_Lable - carry); j < New_Lable - jump; j++)
+                        {
+                            Delta[z] += (Sigmoid[z] * (1 - Sigmoid[z])) * Delta[j] * Weight_Layer[i - 1, inc + small_jump];
+                            small_jump += Hd_L_Number;
+                        }
+                        small_jump = 0;
+                        jump += Hd_L_Number;
+                        inc++;
+                    }
+                }
+                carry = 0;
+                inc = 0;
+                jump = 0;
+
+                /*Weight 갱신*/
+                //Bias 부분
+                for (int i = 0; i < New_Lable; ++i) Bias_Weight[i] = (L_N_G * Delta[i] * Bias) + Bias_Weight[i];
+                for (int i = New_Lable; i < Number_Neurons; ++i) Bias_Weight[i] = (L_N_G * Delta_Output[i - New_Lable] * Bias) + Bias_Weight[i];
+
+                //Input <---> Hidden Layer 1층 부분
+                //ex) 5 * 5 -> 25
+                for (int i = 0; i < (Input_Neuron * Hd_L_Number); ++i)
+                {
+                    carry = i % Input_Neuron; //Input 2개 일때 (l--> 0 1 0 1)
+                    if (i > 0)
+                    {                             //i--> 0 1 2 3 4 5 6 7  => l --> 0 1 0 1 0 1 0 1
+                        if (carry == 0) ++k;  //K--> 0 0 1 1 2 2 3 3
+                    }
+                    Weight_Input_Layer[i] = (L_N_G * Delta[k] * Input[carry + bnc * Input_Neuron]) + Weight_Input_Layer[i];
+                }
+                carry = 0;
+                k = 0;
+
+                /*Hidden Layer 사이의 Weight 갱신*/
+                for (int i = (Number_Layer - 1); i > 0; --i)
+                {
+                    carry += Hd_L_Number;
+                    //ex) 1. 25 - 5 - 5 < 25 - 5  2. 25 - 10 -5 < 25 - 10
+                    for (int j = (New_Lable - carry - Hd_L_Number); j < (New_Lable - carry); ++j)
+                    {
+                        //ex) 1. 25 - 5 < 25 - 0  2. 25-10 < 25-5 ... 
+                        for (int k = (New_Lable - carry); k < (New_Lable - jump); ++k)
+                        {
+                            Weight_Layer[i - 1, inc] = (L_N_G * Delta[k] * Sigmoid[j]) + Weight_Layer[i - 1, inc];
+                            ++inc;
+                        }
+                    }
+                    jump += Hidden_Layer[i];
+                    inc = 0;
+                }
+                inc = 0;
+                jump = 0;
+                carry = 0;
+
+                //Hidden Layer(마지막 층) <---> Output Layer
+                //ex) 1.  0 < 5*5
+                for (int i = 0; i < (Output_Neuron * Hd_L_Number); ++i)
+                {
+                    carry = i % Hd_L_Number;  // 0 1 2 3 4   0 1 2 3 4
+
+                    if (i > 0 && ((i % Hd_L_Number) == 0)) ++k; //ex) i: 5->0 10->0 15->0 20->0
+
+                    Weight_Output_Layer[i] = (L_N_G * Delta_Output[k] * Sigmoid[carry + Lable]) + Weight_Output_Layer[i];
+                }
+                carry = 0;
+                k = 0;
+
+                /*Delta += 사용하였기 때문에 초기화 해주어야 함*/
+                for (int i = 0; i < New_Lable; ++i) Delta[i] = 0;
+                for (int i = 0; i < Output_Neuron; ++i) Delta_Output[i] = 0;
+
+                /*Sum += 문법 초기화*/
+                for (int i = 0; i < New_Lable; ++i) Sum[i] = 0;
+                for (int i = 0; i < Output_Neuron; ++i) Sum_Output[i] = 0;
+
+                /*최종 Error 값 구하는 곳*/
+                //Mean Square Error 적용해보기
+                //RMSE =  Root *( (1.0 / n) * Sigma(i) * pow((Target_Vector(i) - Output(i)) , 2)  )
+                //루트 --> sqrt(실수)     ,    제곱 --> pow(a , 2)
+                for (int i = 0; i < Output_Neuron; ++i)
+                {
+                    Error[i] = (Target_t[bnc, i] - Sigmoid_Output[i]);
+                    RMSE += ((1.0 / Output_Neuron) * Math.Pow(Error[i], 2));
+                    Error_add[i] += Math.Abs(Error[i]);
+
+                }
+                RMSE = Math.Sqrt(RMSE);
+
+                ++bnc;
+                ++Iteration;
+                if (bnc == Get_days) bnc = 0;
+
+                if ((Iteration % Get_days) == 0)
+                {
+                    RMSE = 0;
+                    for (int i = 0; i < Output_Neuron; ++i)
+                    {
+                        Error_Result[i] = (Error_add[i] / Get_days);
+                        Error_add[i] = 0;
+                    }
+                }
+            }//while(Epoch-- > 0)
+
+            //TEST OUTPUT(TEXT Result)
+            /*Test할 Input 값 입력*/
+            bnc = 0;
+            for (int i = 0; i < Input_Neuron; i++)
+            {
+                for (int j = 0; j < Get_days; j++)
+                {
+                    //ex) 0,4,8,12,16
+                    //ex) 1,5,9,13,17
+                    T_Input[i] += Input[j * (Get_days - 1) + i];
+                }
+                T_Input[i] = T_Input[i] / Get_days;
+            }
+
+            /*Input - Hidden Layer[0] 사이 Sum,Sigmoid,Delta */
+            for (int i = 0; i < Hd_L_Number; ++i)
+            {
+                for (int j = 0; j < Input_Neuron; ++j)
+                {
+                    T_Sum[i] += (T_Input[j + bnc * 2] * Weight_Input_Layer[inc]);
+                    ++inc;
+                }
+                T_Sum[i] += (Bias * Bias_Weight[i]);
+                T_Sigmoid[i] = (1.0 / (1.0 + Math.Exp(-T_Sum[i])));
+            }
+            inc = 0;
+
+            /*Hidden Layer들 사이의 Sum, Sigmoid*/
+            for (int i = 0; i < (Number_Layer - 1); ++i)
+            {
+                carry += Hd_L_Number;
+                for (int j = carry; j < carry + Hd_L_Number; ++j)
+                {
+                    for (int k = jump; k < carry; ++k)
+                    {
+                        T_Sum[j] += (T_Sigmoid[k] * Weight_Layer[i, inc]);
+                        ++inc;
+                    }
+                    T_Sum[j] += (Bias * Bias_Weight[j]);
+                    T_Sigmoid[j] = (1.0 / (1.0 + Math.Exp(-T_Sum[j])));
+                }
+                inc = 0;
+                jump += Hd_L_Number;
+            }
+            jump = 0;
+            carry = 0;
+
+            /*	Output Layer와 연결된 Hidden Layer이용하여 Output Sum,Sigmoid	*/
+            for (int i = 0; i < Output_Neuron; ++i)
+            {
+                for (int j = Lable; j < New_Lable; ++j)
+                {
+                    T_Output_Sum[i] += (T_Sigmoid[j] * Weight_Output_Layer[inc]);
+                    ++inc;
+                }
+                T_Output_Sum[i] += (Bias * Bias_Weight[New_Lable + i]);
+                T_Output_Sigmoid[i] = (1.0 / (1.0 + Math.Exp(-T_Output_Sum[i])));
+            }
+            inc = 0;
+
+            return Math.Abs(T_Output_Sigmoid[0]);
+        } //BP_START
+
+
+
     } //CLASS
 }
