@@ -41,7 +41,7 @@ namespace ReZero_Project_1
 
         //const
         const int _5days = 5;
-        const int _days = 20;
+        const int _days = 60;
 
         Global_days GG = new Global_days();
         
@@ -130,7 +130,7 @@ namespace ReZero_Project_1
             //Learn_Result = BP.BP_START(s_dmp_int, s_dhp_int, s_dlp_int, s_dtv_int, s_dcp_int);
             Learn_Result = BP.BP_START_STOCK(ref stock);
 
-            textBox9.Text += "종가 예측: " + Learn_Result;
+            textBox9.Text += "종가 예측: " + (int)Learn_Result;
         }
 
 
@@ -252,8 +252,16 @@ namespace ReZero_Project_1
             //NEW
             //Page1 10days
             textBox8.Text = HTML_ADDR.html_HtmlDoc_page1(jusik_code, ref stock);
-            //Page2 10days
+            //Page2 20days
             textBox8.Text += HTML_ADDR.html_HtmlDoc_page2(jusik_code, ref stock);
+            //Page3 30days
+            textBox8.Text += HTML_ADDR.html_HtmlDoc_page3(jusik_code, ref stock);
+            //Page4 40days
+            textBox8.Text += HTML_ADDR.html_HtmlDoc_page4(jusik_code, ref stock);
+            //Page5 50days
+            textBox8.Text += HTML_ADDR.html_HtmlDoc_page5(jusik_code, ref stock);
+            //Page6 60days
+            textBox8.Text += HTML_ADDR.html_HtmlDoc_page6(jusik_code, ref stock);
 #if false
             //시가,고가,저가,거래량 --> 종가   총 5개 데이터 필요, 5일선,20일선,60일선 
             var html = @"https://finance.naver.com/item/sise_day.nhn?code=";
@@ -409,10 +417,6 @@ namespace ReZero_Project_1
             for (int i = GG._days-1; i > 0; i--)
             {
                 chart1.Series["Series1"].Points.AddXY(stock[i].s_date.ToString("D4"), stock[i].s_dcp_int);
-//                chart1.Series["Series1"].Points.AddXY(stock[3].s_date.ToString("D4"), stock[3].s_dcp_int);
-//                chart1.Series["Series1"].Points.AddXY(stock[2].s_date.ToString("D4"), stock[2].s_dcp_int);
-//                chart1.Series["Series1"].Points.AddXY(stock[1].s_date.ToString("D4"), stock[1].s_dcp_int);
-//                chart1.Series["Series1"].Points.AddXY(stock[0].s_date.ToString("D4"), stock[0].s_dcp_int);
             }
         }
 

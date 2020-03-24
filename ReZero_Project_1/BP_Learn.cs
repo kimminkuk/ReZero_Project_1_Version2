@@ -12,14 +12,14 @@ namespace ReZero_Project_1
         //const
         const int Input_Neuron  = 4;
         const int Output_Neuron = 1;
-        const int Number_Layer  = 2;
+        const int Number_Layer  = 5; //2
         const int Hd_L_Number   = 10;//hidden layer of neuron number
         const int Number_Neurons = Hd_L_Number * Number_Layer + Output_Neuron; //TEMP
         const int Get_5days = 5; // HTML COUNT -->  5 days?
         const int Get_20days = 20;
         const int Get_60days = 60;
 
-        const int Get_days = 20;
+        const int Get_days = Get_60days;
 
         //int 
         int Bias = 1;
@@ -37,9 +37,9 @@ namespace ReZero_Project_1
         int Lable = Number_Neurons - Output_Neuron - Hd_L_Number;
         
         double RMSE = 0;
-        double L_N_G = 0.2;
+        double L_N_G = 0.4;
         
-        double[] Input      = new double[Get_5days * Input_Neuron];
+        double[] Input      = new double[Get_days * Input_Neuron];
         double[] Sigmoid    = new double[100];
         double[] Delta      = new double[100];
         double[] Sum        = new double[100];
@@ -55,8 +55,8 @@ namespace ReZero_Project_1
         
         double[] Weight_Input_Layer  = new double[100]; //Input_Neuron * Hidden_Layer 1layer
         double[] Weight_Output_Layer = new double[100]; //Output Neuron * Hidden_Layer Last layer
-        double[,] Weight_Layer = new double[Number_Layer, Hd_L_Number* Hd_L_Number];
-        double[,] Target_t = new double[Get_5days, Output_Neuron]; // ?
+        double[,] Weight_Layer = new double[Number_Layer, Hd_L_Number* Hd_L_Number* Number_Layer];
+        double[,] Target_t = new double[Get_days, Output_Neuron]; // ?
         
         int[] Hidden_Layer = new int[10];
         /* FOR BPA END */
@@ -648,16 +648,28 @@ namespace ReZero_Project_1
             //TEST OUTPUT(TEXT Result)
             /*Test할 Input 값 입력*/
             bnc = 0;
+#if false
             for (int i = 0; i < Input_Neuron; i++)
             {
                 for (int j = 0; j < Get_days; j++)
                 {
-                    //ex) 0,4,8,12,16
-                    //ex) 1,5,9,13,17
-                    T_Input[i] += Input[j * (Get_days - 1) + i];
+                    //ex) 0,4,8,12,16   ||  0 4 8 12 16 
+                    //ex) 1,5,9,13,17   ||  1 5 9 13
+                    T_Input[i] += Input[j*Input_Neuron + i];
                 }
                 T_Input[i] = T_Input[i] / Get_days;
             }
+#endif
+            //1.시가 2.고가 3.저가 4.거래량 5.종가(타겟)
+            T_Input[0] = stock_bp[0].s_dmp_int;
+            T_Input[1] = stock_bp[0].s_dhp_int;
+            T_Input[2] = stock_bp[0].s_dlp_int;
+            T_Input[3] = stock_bp[0].s_dtv_int;
+
+            T_Input[0] /= Math.Pow(10, digits);
+            T_Input[1] /= Math.Pow(10, digits);
+            T_Input[2] /= Math.Pow(10, digits);
+            T_Input[3] /= Math.Pow(10, digits_tv);
 
             /*Input - Hidden Layer[0] 사이 Sum,Sigmoid,Delta */
             for (int i = 0; i < Hd_L_Number; ++i)
@@ -705,10 +717,7 @@ namespace ReZero_Project_1
             }
             inc = 0;
 
-            return Math.Abs(T_Output_Sigmoid[0]);
+            return Math.Abs(T_Output_Sigmoid[0]) * Math.Pow(10, digits);
         } //BP_START
-
-
-
     } //CLASS
 }
