@@ -45,19 +45,16 @@ namespace ReZero_Project_1
 
         Global_days GG = new Global_days();
         
-        // int[] s_date = new int[_days]; //date get
-        // int[] s_dcp_int = new int[_days]; //closing price
-        // int[] s_dtv_int = new int[_days]; //transaction volume
-        // int[] s_dmp_int = new int[_days]; //marget price
-        // int[] s_dhp_int = new int[_days]; //high price
-        // int[] s_dlp_int = new int[_days]; //low price
-
         stock_[] stock = new stock_[_days];
+
+        stock_v2[] stk_v2 = new stock_v2[_days];
 
         //FLAG
         bool timer_end = false;
         bool excel_load_flg = false;
         bool AI_Learn_flg = false;
+        bool BAP_cliked = false;
+        bool smart_cliked = false;
 
         public Form1()
         {
@@ -71,11 +68,19 @@ namespace ReZero_Project_1
 
         private void checkedListBox1_SelectedIndexChanged(object sender, EventArgs e)
         {
-            //int index = BAP.SelectedIndex;
-            //string item = BAP.SelectedItem.ToString();
-            //
-            //textBox9.Text = index + "/" + item + "Selected";
-            
+            int index = BAP.SelectedIndex;
+
+            switch (index)
+            {
+                case 0:
+                    BAP_cliked = true;
+                    break;
+                case 1:
+                    smart_cliked = true;
+                    break;
+                default:
+                    break;
+            }
         }
 
         //Excel Load
@@ -99,10 +104,8 @@ namespace ReZero_Project_1
                     textBox1.Text = sj.jongmok[i];
 
                     //종목코드
-                    //string sr = sj.company[i].ToString();
                     textBox2.Text = sj.company[i].ToString("D6");
                     jusik_code = textBox2.Text;
-                    //textBox2.Text = Convert.ToString(sj.company[i]);
                     break;
                 }
                 if (i == 3720) textBox2.Text = "ERR";
@@ -128,8 +131,18 @@ namespace ReZero_Project_1
 
             //5days
             //Learn_Result = BP.BP_START(s_dmp_int, s_dhp_int, s_dlp_int, s_dtv_int, s_dcp_int);
-            Learn_Result = BP.BP_START_STOCK(ref stock);
-
+            if (BAP_cliked == true)
+            {
+                Learn_Result = BP.BP_START_STOCK(ref stock);
+            } 
+            else if( smart_cliked == true )
+            {
+                Learn_Result = BP.BP_START_STOCK_VERSION2(ref stk_v2);
+            }
+            else
+            {
+                Learn_Result = 0;
+            }
             textBox9.Text += "종가 예측: " + (int)Learn_Result;
         }
 
@@ -204,6 +217,8 @@ namespace ReZero_Project_1
         {
             excel_load_flg = false;
             AI_Learn_flg = false;
+            BAP_cliked = false;
+            smart_cliked = false;
             //회사 명
             textBox1.Text = "검색어 입력";
 
@@ -249,19 +264,21 @@ namespace ReZero_Project_1
             AI_Learn_flg = true;
             html_addr HTML_ADDR = new html_addr();
 
-            //NEW
-            //Page1 10days
-            textBox8.Text = HTML_ADDR.html_HtmlDoc_page1(jusik_code, ref stock);
-            //Page2 20days
-            textBox8.Text += HTML_ADDR.html_HtmlDoc_page2(jusik_code, ref stock);
-            //Page3 30days
-            textBox8.Text += HTML_ADDR.html_HtmlDoc_page3(jusik_code, ref stock);
-            //Page4 40days
-            textBox8.Text += HTML_ADDR.html_HtmlDoc_page4(jusik_code, ref stock);
-            //Page5 50days
-            textBox8.Text += HTML_ADDR.html_HtmlDoc_page5(jusik_code, ref stock);
-            //Page6 60days
-            textBox8.Text += HTML_ADDR.html_HtmlDoc_page6(jusik_code, ref stock);
+            if (BAP_cliked == true)
+            {
+                //NEW
+                //Page1 10days
+                textBox8.Text = HTML_ADDR.html_HtmlDoc_page1(jusik_code, ref stock);
+                //Page2 20days
+                textBox8.Text += HTML_ADDR.html_HtmlDoc_page2(jusik_code, ref stock);
+                //Page3 30days
+                textBox8.Text += HTML_ADDR.html_HtmlDoc_page3(jusik_code, ref stock);
+                //Page4 40days
+                textBox8.Text += HTML_ADDR.html_HtmlDoc_page4(jusik_code, ref stock);
+                //Page5 50days
+                textBox8.Text += HTML_ADDR.html_HtmlDoc_page5(jusik_code, ref stock);
+                //Page6 60days
+                textBox8.Text += HTML_ADDR.html_HtmlDoc_page6(jusik_code, ref stock);
 #if false
             //시가,고가,저가,거래량 --> 종가   총 5개 데이터 필요, 5일선,20일선,60일선 
             var html = @"https://finance.naver.com/item/sise_day.nhn?code=";
@@ -412,11 +429,40 @@ namespace ReZero_Project_1
             chart1.Series["Series1"].Points.AddXY(s_date[0].ToString("D4"), s_dcp_int[0]);
 #endif
 
-            //chart add
-            chart1.Series["Series1"].Points.Clear();
-            for (int i = GG._days-1; i > 0; i--)
+                //chart add
+                chart1.Series["Series1"].Points.Clear();
+                for (int i = GG._days - 1; i > 0; i--)
+                {
+                    chart1.Series["Series1"].Points.AddXY(stock[i].s_date.ToString("D4"), stock[i].s_dcp_int);
+                }
+            }
+            else if (smart_cliked == true)
             {
-                chart1.Series["Series1"].Points.AddXY(stock[i].s_date.ToString("D4"), stock[i].s_dcp_int);
+                //NEW
+                //Page1 10days
+                textBox8.Text = HTML_ADDR.html_HtmlDoc_page1_v2(jusik_code, ref stk_v2);
+                //Page2 20days
+                textBox8.Text += HTML_ADDR.html_HtmlDoc_page2_v2(jusik_code, ref stk_v2);
+                //Page3 30days
+                textBox8.Text += HTML_ADDR.html_HtmlDoc_page3_v2(jusik_code, ref stk_v2);
+                //Page4 40days
+                textBox8.Text += HTML_ADDR.html_HtmlDoc_page4_v2(jusik_code, ref stk_v2);
+                //Page5 50days
+                textBox8.Text += HTML_ADDR.html_HtmlDoc_page5_v2(jusik_code, ref stk_v2);
+                //Page6 60days
+                textBox8.Text += HTML_ADDR.html_HtmlDoc_page6_v2(jusik_code, ref stk_v2);
+
+                //chart add
+                chart1.Series["Series1"].Points.Clear();
+                for (int i = GG._days - 1; i > 0; i--)
+                {
+                    chart1.Series["Series1"].Points.AddXY(stk_v2[i].s_date.ToString("D4"), stk_v2[i].s_dcp_int);
+                }
+
+            }
+            else
+            {
+                textBox8.Text = "SELECT ERR";
             }
         }
 
